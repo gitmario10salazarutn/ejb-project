@@ -1,0 +1,953 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<f:facet name="first">
+		<meta name="viewport"
+			content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no" />
+		<title>Products</title>
+	</f:facet>
+	<link href="../../css/style.css" rel="stylesheet" />
+	<style type="text/css">
+.par {
+	background-color: #b3b7cc !important;
+	background-image: none !important;
+	color: #091833 !important;
+}
+
+.inpar {
+	background-color: #d0d2e0 !important;
+	background-image: none !important;
+	color: #091833 !important;
+}
+
+.state {
+	background-color: #FB943C !important;
+	background-image: none !important;
+	color: #091833 !important;
+}
+</style>
+</h:head>
+<body id="body">
+	<p:growl>
+		<p:autoUpdate />
+	</p:growl>
+	<h:form id="form">
+		<p:menubar style="background-color: #5DADE2;">
+			<p:menuitem value="Back" icon="fa fa-arrow-circle-left"
+				outcome="/login?faces-redirect=true">
+				<f:param name="i" value="0" />
+			</p:menuitem>
+			<p:menuitem value="Home"
+				outcome="/seguridades/administrador/menu_administrador"
+				icon="fa fa-home">
+				<f:param name="i" value="1" />
+			</p:menuitem>
+			<p:submenu label="Sales" icon="fa fa-calendar-plus-o">
+				<p:menuitem value="Normal Sales" icon="fa fa-shopping-cart"
+					outcome="/inventario/ventas/index_ventas">
+					<f:param name="i" value="2" />
+				</p:menuitem>
+				<p:menuitem value="Advanced Sales"
+					icon="fa fa-cart-arrow-down"
+					outcome="/inventario/ventas_anticipos/index_anticipos">
+					<f:param name="i" value="3" />
+				</p:menuitem>
+			</p:submenu>
+
+			<p:menuitem value="Buy Products" icon="fa fa-cart-plus"
+				outcome="/inventario/compras/index_compras">
+				<f:param name="i" value="4" />
+			</p:menuitem>
+
+			<p:menuitem value="Customers" icon="fa fa-users"
+				outcome="/talentohumano/clientes/menu_clientes">
+				<f:param name="i" value="5" />
+			</p:menuitem>
+
+			<p:menuitem value="Sellers" icon="fa fa-group"
+				disabled="#{beanUsuarios.usuario.tipoUsuario.idTipoUsuario!=1}"
+				outcome="/talentohumano/vendedores/menu_vendedores">
+				<f:param name="i" value="6" />
+			</p:menuitem>
+
+			<p:menuitem value="Invoices" icon="fa fa-file-text"
+				disabled="#{beanUsuarios.usuario.tipoUsuario.idTipoUsuario!=1}"
+				outcome="/inventario/facturas/menu_facturas">
+				<f:param name="i" value="7" />
+			</p:menuitem>
+
+			<p:menuitem value="Products" icon="fa fa-cubes"
+				disabled="#{beanUsuarios.usuario.tipoUsuario.idTipoUsuario!=1}"
+				outcome="/inventario/productos/menu_productos">
+				<f:param name="i" value="8" />
+			</p:menuitem>
+
+			<p:menuitem value="Suppliers" icon="fa fa-address-card"
+				disabled="#{beanUsuarios.usuario.tipoUsuario.idTipoUsuario!=1}"
+				outcome="/inventario/compras/Proveedor">
+				<f:param name="i" value="9" />
+			</p:menuitem>
+
+			<f:facet name="options">
+				<p:menuButton value="#{beanUsuarios.usuario.idUsuario}"
+					icon="fa fa-user">
+					<p:menuitem value="Profile" icon="fa fa-cog"></p:menuitem>
+					<p:menuitem value="Sign Out" icon="fa fa-sign-out"
+						outcome="/login"></p:menuitem>
+				</p:menuButton>
+			</f:facet>
+		</p:menubar>
+	</h:form>
+
+	<h:form id="form0">
+		<div align="center">
+			<p:panelGrid columns="4" style="width: 1280px"
+				styleClass="ui-noborder">
+				<p:commandButton value="Enter news Products"
+					icon="fa fa-cart-plus"
+					update=":form-crear:crearnuevo-ProductDialog"
+					oncomplete="PF('crearnuevoProductDialog').show()"
+					styleClass="ui-button-success" style="width: 340px">
+					<p:resetInput target=":form-crear:crearnuevo-ProductDialog" />
+				</p:commandButton>
+				<p:commandButton value="View Products by Clothing size"
+					icon="fa fa-cart-plus" update=":form2:manage-product-content2"
+					oncomplete="PF('manageProductDialog2').show()"
+					styleClass="ui-button-success" style="width: 340px">
+					<p:resetInput target=":form2:manage-product-content2" />
+				</p:commandButton>
+
+				<p:commandButton value="View Products by Type"
+					icon="fa fa-cart-plus" update=":form3:manage-product-content3"
+					oncomplete="PF('manageProductDialog3').show()"
+					styleClass="ui-button-success" style="width: 340px">
+					<p:resetInput target=":form3:manage-product-content3" />
+				</p:commandButton>
+
+				<p:commandButton value="View All Products"
+					icon="fa fa-cart-plus"
+					action="#{beanProductos.actionVerTodosLosProductos()}"
+					styleClass="ui-button-success" style="width: 340px">
+				</p:commandButton>
+
+			</p:panelGrid>
+		</div>
+	</h:form>
+
+
+
+
+
+	<h:form id="form2">
+		<div align="center">
+			<p:dialog header="Select the clothing size of product"
+				showEffect="fade" modal="true" widgetVar="manageProductDialog2"
+				responsive="true">
+				<p:outputPanel id="manage-product-content2" class="ui-fluid">
+					<p:panelGrid columns="2">
+						<h:outputText value="Clothing size:" />
+						<p:selectOneMenu value="#{beanProductos.id_talla_producto}"
+							style="width:350px" panelStyle="width:180px" effect="fade"
+							filter="true" filterMatchMode="startsWith">
+							<f:selectItems value="#{beanProductos.listaTallaProductos}"
+								var="talla" itemLabel="#{talla.tallaNombre}"
+								itemValue="#{talla.idTallaProducto}">
+								<p:column style="width:10%">
+									<span class="flag flag-#{talla.tallaNombre}"
+										style="width: 30px; height: 20px" />
+								</p:column>
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Name" />
+									</f:facet>
+									<h:outputText value="#{talla.tallaNombre}" />
+								</p:column>
+
+							</f:selectItems>
+							<f:facet name="footer">
+								<h:outputText
+									value="#{beanProductos.listaTallaProductos.size()} clothing sizes found"
+									style="font-weight:bold;" styleClass="p-py-1 p-d-block" />
+							</f:facet>
+						</p:selectOneMenu>
+					</p:panelGrid>
+					<br />
+					<div align="center">
+						<p:commandButton value="List Products"
+							styleClass="ui-button-success" style="width: auto"
+							actionListener="#{beanProductos.actionListenerMostrarProductosByTalla()}"
+							oncomplete="PF('manageProductDialog2').hide()" icon="fa fa-table"
+							update="form-tablaproductos" />
+					</div>
+				</p:outputPanel>
+
+			</p:dialog>
+		</div>
+	</h:form>
+
+	<h:form id="form3">
+		<div align="center">
+			<p:dialog header="Select the product type" showEffect="fade"
+				modal="true" widgetVar="manageProductDialog3" responsive="true">
+				<p:outputPanel id="manage-product-content3" class="ui-fluid">
+					<p:panelGrid columns="2">
+						<h:outputText value="Product Type:" />
+						<p:selectOneMenu value="#{beanProductos.id_tipo_producto}"
+							style="width:350px" panelStyle="width:180px" effect="fade"
+							filter="true" filterMatchMode="startsWith">
+							<f:selectItems value="#{beanProductos.listaTipoProductos}"
+								var="tipo" itemLabel="#{tipo.tpNombre}"
+								itemValue="#{tipo.idTipoProducto}">
+								<p:column style="width:10%">
+									<span class="flag flag-#{tipo.tpNombre}"
+										style="width: 30px; height: 20px" />
+								</p:column>
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Name" />
+									</f:facet>
+									<h:outputText value="#{tipo.tpNombre}" />
+								</p:column>
+
+							</f:selectItems>
+							<f:facet name="footer">
+								<h:outputText
+									value="#{beanProductos.listaTipoProductos.size()} products types found"
+									style="font-weight:bold;" styleClass="p-py-1 p-d-block" />
+							</f:facet>
+						</p:selectOneMenu>
+					</p:panelGrid>
+					<br />
+					<div align="center">
+						<p:commandButton value="List Products"
+							styleClass="ui-button-success" style="width: auto"
+							actionListener="#{beanProductos.actionListenerMostrarProductosByTipo()}"
+							oncomplete="PF('manageProductDialog3').hide()" icon="fa fa-table"
+							update="form-tablaproductos" />
+					</div>
+				</p:outputPanel>
+
+			</p:dialog>
+		</div>
+	</h:form>
+
+	<h:form id="form-tablaproductos">
+
+		<div align="center">
+			<p:fieldset legend="View List of products in stock"
+				toggleable="true" collapsed="true" toggleSpeed="500"
+				style="aling: center">
+
+				<p:dataTable value="#{beanProductos.listaProductos}" var="productos"
+					stripedRows="true" paginator="true" reflow="true" rows="5"
+					rowIndexVar="index" style="font-size: 12px"
+					paginatorPosition="bottom"
+					rowStyleClass="#{index mod 2 eq 0 ? 'par' : 'inpar'}">
+
+					<p:column headerText="CODE" sortBy="#{productos.prodCodigo}"
+						filterBy="#{productos.prodCodigo}">
+						<h:outputText value="#{productos.prodCodigo}" />
+					</p:column>
+					<p:column headerText="QUANT" sortBy="#{productos.prodCantidad}"
+						filterBy="#{productos.prodCantidad}">
+						<h:outputText value="#{productos.prodCantidad}" />
+					</p:column>
+
+					<p:column headerText="NAME" sortBy="#{productos.prodNombre}"
+						filterBy="#{productos.prodNombre}">
+						<h:outputText value="#{productos.prodNombre}" />
+					</p:column>
+					<p:column headerText="DESCR" sortBy="#{productos.prodDescripcion}"
+						filterBy="#{productos.prodDescripcion}">
+						<h:outputText value="#{productos.prodDescripcion}" />
+					</p:column>
+
+					<p:column headerText="SUPPLIER"
+						sortBy="#{productos.empresa.empNombreEmpresa}"
+						filterBy="#{productos.empresa.empNombreEmpresa}">
+						<h:outputText value="#{productos.empresa.empNombreEmpresa}" />
+					</p:column>
+					<p:column headerText="PRICE" sortBy="#{productos.prodPvpublico}"
+						filterBy="#{productos.prodPvpublico}">
+						<h:outputText value="#{productos.prodPvpublico}" />
+					</p:column>
+
+					<p:column headerText="CLOTH. SIZE"
+						sortBy="#{productos.tallaProducto.tallaNombre}"
+						filterBy="#{productos.tallaProducto.tallaNombre}">
+						<h:outputText value="#{productos.tallaProducto.tallaNombre}" />
+					</p:column>
+
+					<p:column headerText="TYPE"
+						sortBy="#{productos.tipoProducto.tpNombre}"
+						filterBy="#{productos.tipoProducto.tpNombre}">
+						<h:outputText value="#{productos.tipoProducto.tpNombre}" />
+					</p:column>
+
+					<p:column headerText="OPTIONS">
+						<p:menuButton value="Opciones"
+							buttonStyleClass="ui-button-outlined"
+							buttonStyle="box-shadow: 0 0 10px">
+							<p:divider />
+							<p:menuitem value="Edit" icon="fa fa-edit"
+								update=":form-editar:editar-ProductDialog"
+								actionListener="#{beanProductos.actionListenerSeleccionarProducto(productos.prodCodigo)}"
+								oncomplete="PF('editarProductDialog').show()">
+								<p:resetInput target=":form-editar:editar-ProductDialog" />
+							</p:menuitem>
+							<p:divider />
+							<p:menuitem value="Create New Product" icon="fa fa-plus"
+								update=":form-crear:crearnuevo-ProductDialog"
+								actionListener="#{beanProductos.actionListenerSeleccionarProducto(productos.prodCodigo)}"
+								oncomplete="PF('crearnuevoProductDialog').show()">
+								<p:resetInput target=":form-crear:crearnuevo-ProductDialog" />
+							</p:menuitem>
+
+							<p:menuitem value="Generate Report" ajax="false"
+								styleClass="ui-button-help" icon="fa fa-file-pdf-o"
+								action="#{beanProductos.actionReporte()}">
+							</p:menuitem>
+							<p:divider />
+
+							<p:menuitem update="@form,:form-tablaproductos" value="Delete"
+								icon="fa fa-trash"
+								actionListener="#{beanProductos.actionListenerEliminarProducto(productos.prodCodigo)}">
+							</p:menuitem>
+						</p:menuButton>
+
+					</p:column>
+				</p:dataTable>
+			</p:fieldset>
+		</div>
+	</h:form>
+
+
+	<h:form id="form-editar">
+		<p:growl>
+			<p:autoUpdate></p:autoUpdate>
+		</p:growl>
+		<div align="center">
+			<p:dialog header="Edit Product" showEffect="fade" modal="true"
+				widgetVar="editarProductDialog" responsive="true">
+				<p:outputPanel id="editar-ProductDialog" class="ui-fluid">
+
+					<div align="center">
+						<p:panel>
+
+							<p:panelGrid columns="4"
+								columnClasses="ui-grid-col-2,ui-grid-col-4,ui-grid-col-2,ui-grid-col-4"
+								layout="grid" styleClass="ui-panelgrid-blank ui-fluid"
+								style="border:0px none; background-color:transparent;">
+
+								<p:outputLabel for="@next" value="CODE " />
+								<p:inputText id="a" placeholder="CODE"
+									value="#{beanProductos.productoEditar.prodCodigo}"
+									required="true"
+									requiredMessage="Enter the product code!">
+									<p:tooltip for="a" value="Enter the product code!"
+										position="bottom" />
+								</p:inputText>
+
+								<p:outputLabel for="@next" value="Product Name: " />
+								<p:inputText id="b" placeholder="Product Name"
+									value="#{beanProductos.productoEditar.prodNombre}"
+									required="true"
+									requiredMessage="Enter the product name!">
+									<p:tooltip for="b" value="Enter the product name!"
+										position="bottom" />
+								</p:inputText>
+
+								<p:outputLabel value="Select clothing size:"></p:outputLabel>
+								<p:selectOneMenu value="#{beanProductos.id_talla_producto}">
+									<f:selectItem
+										itemLabel="#{beanProductos.productoSeleccionado.tallaProducto.tallaNombre}"
+										itemValue="#{beanProductos.productoSeleccionado.tallaProducto.idTallaProducto}" />
+									<f:selectItems value="#{beanProductos.listaTallaProductos}"
+										var="talla" itemLabel="#{talla.tallaNombre}"
+										itemValue="#{talla.idTallaProducto}"></f:selectItems>
+								</p:selectOneMenu>
+
+								<p:outputLabel for="@next" value="Description: " />
+								<p:inputTextarea id="c" placeholder="Product description"
+									value="#{beanProductos.productoEditar.prodDescripcion}"
+									required="true"
+									requiredMessage="Enter the product description!">
+									<p:tooltip for="c" value="Enter the product description!"
+										position="bottom" />
+								</p:inputTextarea>
+
+								<p:outputLabel for="@next" value="Quantity: " />
+								<p:spinner id="d" placeholder="Product quantity" min="0"
+									max="50" value="#{beanProductos.productoEditar.prodCantidad}">
+									<p:tooltip for="d" value="Enter the product quantity!"
+										position="bottom" />
+								</p:spinner>
+
+								<p:outputLabel for="@next" value="Supplier Price: " />
+								<p:spinner id="e" placeholder="15.25" buttons="horizontal-after"
+									prefix="$ " stepFactor="0.01"
+									upButtonStyleClass="ui-button-success" min="0.00"
+									downButtonStyleClass="ui-button-danger"
+									value="#{beanProductos.productoEditar.prodPvproveedor}"
+									required="true"
+									requiredMessage="Enter the Supplier's price!">
+									<p:tooltip for="e" value="Enter the Supplier's price"
+										position="bottom" />
+								</p:spinner>
+
+								<p:outputLabel for="@next" value="IVA: " />
+								<p:selectOneMenu id="f" placeholder="12"
+									value="#{beanProductos.productoEditar.prodIva}" required="true"
+									requiredMessage="Select the value of IVA!">
+									<f:selectItem itemLabel="12 %" itemValue="12" />
+									<f:selectItem itemLabel="0 %" itemValue="0" />
+									<p:tooltip for="f" value="Select the value of IVA!"
+										position="bottom" />
+								</p:selectOneMenu>
+
+								<p:outputLabel for="@next" value="Sale price to the public: " />
+								<p:spinner id="g" placeholder="15.25" buttons="horizontal-after"
+									prefix="$ " stepFactor="0.01" min="0.00"
+									value="#{beanProductos.productoEditar.prodPvpublico}"
+									required="true"
+									requiredMessage="Enter the sale price the public!">
+									<p:tooltip for="g"
+										value="Enter the sale price the public!"
+										position="bottom" />
+								</p:spinner>
+
+								<p:outputLabel for="@next" value="Product Type: " />
+								<p:selectOneMenu value="#{beanProductos.id_tipo_producto}">
+									<f:selectItem
+										itemLabel="#{beanProductos.productoSeleccionado.tipoProducto.tpNombre}"
+										itemValue="#{beanProductos.productoSeleccionado.tipoProducto.idTipoProducto}"
+										noSelectionOption="true" />
+									<f:selectItems value="#{beanProductos.listaTipoProductos}"
+										var="tipo" itemLabel="#{tipo.tpNombre}"
+										itemValue="#{tipo.idTipoProducto}"></f:selectItems>
+								</p:selectOneMenu>
+
+								<p:outputLabel for="@next" value="Product's Supplier: " />
+								<p:selectOneMenu value="#{beanProductos.id_proveedor}"
+									style="width: 250px">
+									<f:selectItem
+										itemLabel="#{beanProductos.productoSeleccionado.empresa.empNombreEmpresa}"
+										itemValue="#{beanProductos.productoSeleccionado.empresa.idEmpresa}"
+										noSelectionOption="true" />
+									<f:selectItems value="#{beanProductos.listaEmpresas}"
+										var="empresa" itemLabel="#{empresa.empNombreEmpresa}"
+										itemValue="#{empresa.idEmpresa}"></f:selectItems>
+								</p:selectOneMenu>
+
+
+
+							</p:panelGrid>
+						</p:panel>
+
+						<p:panel>
+							<div align="center">
+								<p:row>
+
+									<p:panelGrid columns="1">
+										<p:commandButton value="Save edition the Product"
+											id="btn-editar" icon="fa fa-arrow-circle-right"
+											styleClass="p-mr-2" update="form-tablaproductos"
+											process="editar-ProductDialog @this"
+											actionListener="#{beanProductos.actionListenerEditarProducto()}"
+											onclick="PF('editarProductDialog').hide()" />
+									</p:panelGrid>
+
+								</p:row>
+							</div>
+						</p:panel>
+
+
+					</div>
+				</p:outputPanel>
+
+			</p:dialog>
+		</div>
+	</h:form>
+
+
+
+	<h:form id="form-crear">
+		<p:growl>
+			<p:autoUpdate></p:autoUpdate>
+		</p:growl>
+		<div align="center">
+			<p:dialog header="Add new Product" showEffect="fade"
+				modal="true" widgetVar="crearnuevoProductDialog" responsive="true">
+				<p:outputPanel id="crearnuevo-ProductDialog" class="ui-fluid">
+
+					<div align="center">
+						<p:panel>
+
+							<p:panelGrid columns="4"
+								columnClasses="ui-grid-col-2,ui-grid-col-4,ui-grid-col-2,ui-grid-col-4"
+								layout="grid" styleClass="ui-panelgrid-blank ui-fluid"
+								style="border:0px none; background-color:transparent;">
+
+								<p:outputLabel for="@next" value="CODE " />
+								<p:inputText id="a" placeholder="CODE"
+									value="#{beanProductos.productoNuevo.prodCodigo}"
+									required="true"
+									requiredMessage="Enter the product code!">
+									<p:tooltip for="a" value="Ingrese el código del producto!"
+										position="bottom" />
+								</p:inputText>
+
+								<p:outputLabel for="@next" value="Product Name: " />
+								<p:inputText id="b" placeholder="Product Name"
+									value="#{beanProductos.productoNuevo.prodNombre}"
+									required="true"
+									requiredMessage="Enter the product name!">
+									<p:tooltip for="b" value="Enter the product name!"
+										position="bottom" />
+								</p:inputText>
+
+								<p:outputLabel value="Select clothing size:"></p:outputLabel>
+								<p:selectOneMenu value="#{beanProductos.id_talla_producto}"
+									panelStyle="width:180px" effect="fade" filter="true"
+									filterMatchMode="startsWith">
+									<f:selectItems value="#{beanProductos.listaTallaProductos}"
+										var="talla" itemLabel="#{talla.tallaNombre}"
+										itemValue="#{talla.idTallaProducto}">
+										<p:column style="width:10%">
+											<span class="flag flag-#{talla.tallaNombre}"
+												style="width: 30px; height: 20px" />
+										</p:column>
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="Name" />
+											</f:facet>
+											<h:outputText value="#{talla.tallaNombre}" />
+										</p:column>
+										<f:facet name="footer">
+											<h:outputText
+												value="#{beanProductos.listaTallaProductos.size()} clothinng sizes"
+												style="font-weight:bold;" styleClass="p-py-1 p-d-block" />
+										</f:facet>
+									</f:selectItems>
+								</p:selectOneMenu>
+
+								<p:outputLabel for="@next" value="Description: " />
+								<p:inputTextarea id="c" placeholder="Product description"
+									value="#{beanProductos.productoNuevo.prodDescripcion}"
+									required="true"
+									requiredMessage="Enter the product description!">
+									<p:tooltip for="c" value="Enter the product description!"
+										position="bottom" />
+								</p:inputTextarea>
+
+								<p:outputLabel for="@next" value="Quantity: " />
+								<p:spinner id="d" placeholder="5" buttons="horizontal-after"
+									prefix="Cant.  " stepFactor="1"
+									upButtonStyleClass="ui-button-success" min="0"
+									downButtonStyleClass="ui-button-danger"
+									value="#{beanProductos.productoNuevo.prodCantidad}"
+									required="true"
+									requiredMessage="Enter the product quantity!">
+									<p:tooltip for="d" value="Enter the product quantity!"
+										position="bottom" />
+								</p:spinner>
+
+								<p:outputLabel for="@next" value="Supplier price: " />
+								<p:spinner id="e" placeholder="15.25" buttons="horizontal-after"
+									prefix="$ " stepFactor="0.01"
+									upButtonStyleClass="ui-button-success" min="0.00"
+									downButtonStyleClass="ui-button-danger"
+									value="#{beanProductos.productoNuevo.prodPvproveedor}"
+									required="true"
+									requiredMessage="Enter the suppler price!">
+									<p:tooltip for="e" value="Enter the supplier price"
+										position="bottom" />
+								</p:spinner>
+
+								<p:outputLabel for="@next" value="IVA: " />
+								<p:selectOneMenu id="f" placeholder="12"
+									value="#{beanProductos.productoNuevo.prodIva}" required="true"
+									requiredMessage="Seleccione el valor del Iva!">
+									<f:selectItem itemLabel="12 %" itemValue="12" />
+									<f:selectItem itemLabel="0 %" itemValue="0" />
+									<p:tooltip for="f" value="Select the value of IVA!"
+										position="bottom" />
+								</p:selectOneMenu>
+
+								<p:outputLabel for="@next" value="Sale price to the public: " />
+								<p:spinner id="g" placeholder="15.25" buttons="horizontal-after"
+									prefix="$ " stepFactor="0.01" min="0.00"
+									value="#{beanProductos.productoNuevo.prodPvpublico}"
+									required="true"
+									requiredMessage="Enter the sale price the public!">
+									<p:tooltip for="g"
+										value="Enter the sale price the public!"
+										position="bottom" />
+								</p:spinner>
+
+								<p:outputLabel for="@next" value="Product Type: " />
+								<p:selectOneMenu value="#{beanProductos.id_tipo_producto}"
+									panelStyle="width:180px" effect="fade" filter="true"
+									filterMatchMode="startsWith">
+									<f:selectItems value="#{beanProductos.listaTipoProductos}"
+										var="tipo" itemLabel="#{tipo.tpNombre}"
+										itemValue="#{tipo.idTipoProducto}">
+										<p:column style="width:10%">
+											<span class="flag flag-#{tipo.tpNombre}"
+												style="width: 30px; height: 20px" />
+										</p:column>
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="Name" />
+											</f:facet>
+											<h:outputText value="#{tipo.tpNombre}" />
+										</p:column>
+										<f:facet name="footer">
+											<h:outputText
+												value="#{beanProductos.listaTipoProductos.size()} products types"
+												style="font-weight:bold;" styleClass="p-py-1 p-d-block" />
+										</f:facet>
+									</f:selectItems>
+								</p:selectOneMenu>
+
+								<p:outputLabel for="@next" value="Product Supplier: " />
+								<p:selectOneMenu value="#{beanProductos.id_proveedor}"
+									panelStyle="width:180px" effect="fade" filter="true"
+									filterMatchMode="startsWith">
+									<f:selectItems value="#{beanProductos.listaEmpresas}"
+										var="empresa" itemLabel="#{empresa.empNombreEmpresa}"
+										itemValue="#{empresa.idEmpresa}">
+										<p:column style="width:10%">
+											<span class="flag flag-#{empresa.empNombreEmpresa}"
+												style="width: 30px; height: 20px" />
+										</p:column>
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="Name" />
+											</f:facet>
+											<h:outputText value="#{empresa.empNombreEmpresa}" />
+										</p:column>
+										<f:facet name="footer">
+											<h:outputText
+												value="#{beanProductos.listaEmpresas.size()} Supliers"
+												style="font-weight:bold;" styleClass="p-py-1 p-d-block" />
+										</f:facet>
+									</f:selectItems>
+								</p:selectOneMenu>
+
+
+
+							</p:panelGrid>
+						</p:panel>
+
+						<p:panel>
+							<div align="center">
+								<p:row>
+
+									<p:panelGrid columns="1">
+										<p:commandButton value="Save new Produt"
+											id="btn-editar" icon="fa fa-plus" styleClass="p-mr-2"
+											update="form-tablaproductos"
+											process="crearnuevo-ProductDialog @this"
+											actionListener="#{beanProductos.actionListenerEditarProducto()}"
+											onclick="PF('crearnuevoProductDialog').hide()" />
+									</p:panelGrid>
+
+								</p:row>
+							</div>
+						</p:panel>
+
+
+					</div>
+
+				</p:outputPanel>
+
+			</p:dialog>
+		</div>
+	</h:form>
+
+
+
+	<h:form id="form-tallas-tipos">
+		<div align="center">
+			<p:fieldset legend="View clothing sizes and Products type"
+				toggleable="true" collapsed="true" toggleSpeed="500"
+				style="aling: center">
+				<p:splitter style="height: 300px" styleClass="p-mb-5">
+					<p:splitterPanel styleClass="p-d-flex p-ai-center p-jc-center">
+
+						<p:panel header="Products Clothing sizes">
+							<p:dataTable value="#{beanProductos.listaTallaProductos}"
+								rowIndexVar="index"
+								rowStyleClass="#{index mod 2 eq 0 ? 'par' : 'inpar'}"
+								var="tallas" stripedRows="true" paginator="true" reflow="true"
+								rows="5" style="font-size: 12px" paginatorPosition="bottom">
+								<p:column headerText="CODE" sortBy="#{tallas.idTallaProducto}"
+									filterBy="#{tallas.idTallaProducto}">
+									<h:outputText value="#{tallas.idTallaProducto}" />
+								</p:column>
+								<p:column headerText="QUANT" sortBy="#{tallas.tallaNombre}"
+									filterBy="#{tallas.tallaNombre}">
+									<h:outputText value="#{tallas.tallaNombre}" />
+								</p:column>
+
+								<p:column headerText="OPTIONS">
+									<p:menuButton value="Opciones"
+										buttonStyleClass="ui-button-outlined"
+										buttonStyle="box-shadow: 0 0 10px">
+										<p:divider />
+										<p:menuitem value="Edit" icon="fa fa-edit"
+											update=":form-editar-talla:editarTalla-ProductDialog"
+											oncomplete="PF('editarTallaProductDialog').show()">
+											<p:resetInput
+												target=":form-editar-talla:editarTalla-ProductDialog" />
+										</p:menuitem>
+										<p:divider />
+										<p:menuitem value="Create" icon="fa fa-plus"
+											update=":form-crear-talla:crearTalla-ProductDialog"
+											oncomplete="PF('crearTallaProductDialog').show()">
+											<p:resetInput
+												target=":form-crear-talla:crearTalla-ProductDialog" />
+										</p:menuitem>
+										<p:divider />
+
+										<p:menuitem update="@form,:form-tallas-tipos" value="Delete"
+											icon="fa fa-trash">
+										</p:menuitem>
+									</p:menuButton>
+								</p:column>
+							</p:dataTable>
+						</p:panel>
+
+					</p:splitterPanel>
+					<p:splitterPanel styleClass="p-d-flex p-ai-center p-jc-center">
+						<p:panel header="Products Type">
+							<p:dataTable value="#{beanProductos.listaTipoProductos}"
+								rowIndexVar="index"
+								rowStyleClass="#{index mod 2 eq 0 ? 'par' : 'inpar'}"
+								var="tipos" stripedRows="true" paginator="true" reflow="true"
+								rows="5" style="font-size: 12px" paginatorPosition="bottom">
+								<p:column headerText="CODE" sortBy="#{tipos.idTipoProducto}"
+									filterBy="#{tipos.idTipoProducto}">
+									<h:outputText value="#{tipos.idTipoProducto}" />
+								</p:column>
+								<p:column headerText="QUANT" sortBy="#{tipos.tpNombre}"
+									filterBy="#{tipos.tpNombre}">
+									<h:outputText value="#{tipos.tpNombre}" />
+								</p:column>
+
+								<p:column headerText="OPTIONS">
+									<p:menuButton value="OPTIONS"
+										buttonStyleClass="ui-button-outlined"
+										buttonStyle="box-shadow: 0 0 10px">
+										<p:divider />
+										<p:menuitem value="Edit" icon="fa fa-edit"
+											update=":form-editar-tipo:editarTipo-ProductDialog"
+											oncomplete="PF('editarTipoProductDialog').show()">
+											<p:resetInput
+												target=":form-editar-tipo:editarTipo-ProductDialog" />
+										</p:menuitem>
+										<p:divider />
+										<p:menuitem value="Create" icon="fa fa-plus"
+											update=":form-crear-tipo:crearTipo-ProductDialog"
+											oncomplete="PF('crearTipoProductDialog').show()">
+											<p:resetInput
+												target=":form-crear-tipo:crearTipo-ProductDialog" />
+										</p:menuitem>
+										<p:divider />
+
+										<p:menuitem update="@form,:form-tallas-tipos" value="Delete"
+											icon="fa fa-trash">
+										</p:menuitem>
+									</p:menuButton>
+								</p:column>
+							</p:dataTable>
+						</p:panel>
+					</p:splitterPanel>
+				</p:splitter>
+			</p:fieldset>
+		</div>
+	</h:form>
+
+
+
+	<h:form id="form-crear-talla">
+		<p:growl>
+			<p:autoUpdate></p:autoUpdate>
+		</p:growl>
+		<div align="center">
+			<p:dialog header="Add Clothing Size" showEffect="fade"
+				modal="true" widgetVar="crearTallaProductDialog" responsive="true">
+				<p:outputPanel id="crearTalla-ProductDialog" class="ui-fluid">
+					<div align="center">
+						<p:panel>
+							<p:panelGrid columns="2" layout="grid"
+								styleClass="ui-panelgrid-blank ui-fluid"
+								style="border:0px none; background-color:transparent;">
+
+								<p:outputLabel for="@next" value="Clothing size name: " />
+								<p:inputText id="a" placeholder="Clothing size name" value="001"
+									required="true"
+									requiredMessage="Enter the clothing size name!">
+									<p:tooltip for="a" value="Enter the clothing size name!"
+										position="bottom" />
+								</p:inputText>
+							</p:panelGrid>
+						</p:panel>
+						<p:panel>
+							<div align="center">
+								<p:row>
+									<p:panelGrid columns="1">
+										<p:commandButton value="Save new Clothing size" id="btn-editar"
+											icon="fa fa-plus" styleClass="p-mr-2"
+											update="form-tallas-tipos"
+											process="crearTalla-ProductDialog @this"
+											onclick="PF('crearTallaProductDialog').hide()" />
+									</p:panelGrid>
+
+								</p:row>
+							</div>
+						</p:panel>
+					</div>
+				</p:outputPanel>
+			</p:dialog>
+		</div>
+	</h:form>
+
+
+	<h:form id="form-editar-talla">
+		<div align="center">
+			<p:dialog header="Edit Clothing Size" showEffect="fade"
+				modal="true" widgetVar="editarTallaProductDialog" responsive="true">
+				<p:outputPanel id="editarTalla-ProductDialog" class="ui-fluid">
+					<div align="center">
+						<p:panel>
+							<p:panelGrid columns="2" layout="grid"
+								styleClass="ui-panelgrid-blank ui-fluid"
+								style="border:0px none; background-color:transparent;">
+
+								<p:outputLabel for="@next" value="Clothing size name: " />
+								<p:inputText id="a" placeholder="Nombre de talla" value="001"
+									required="true"
+									requiredMessage="Enter the clothing size name!">
+									<p:tooltip for="a" value="Enter the clothing size name!"
+										position="bottom" />
+								</p:inputText>
+							</p:panelGrid>
+						</p:panel>
+						<p:panel>
+							<div align="center">
+								<p:row>
+									<p:panelGrid columns="1">
+										<p:commandButton value="Save edition of clothing size"
+											id="btn-editar" icon="fa fa-plus" styleClass="p-mr-2"
+											update="form-tallas-tipos"
+											process="editarTalla-ProductDialog @this"
+											onclick="PF('editarTallaProductDialog').hide()" />
+									</p:panelGrid>
+
+								</p:row>
+							</div>
+						</p:panel>
+					</div>
+				</p:outputPanel>
+			</p:dialog>
+		</div>
+	</h:form>
+
+
+
+	<h:form id="form-crear-tipo">
+		<p:growl>
+			<p:autoUpdate></p:autoUpdate>
+		</p:growl>
+		<div align="center">
+			<p:dialog header="Add new Product Type" showEffect="fade"
+				modal="true" widgetVar="crearTipoProductDialog" responsive="true">
+				<p:outputPanel id="crearTipo-ProductDialog" class="ui-fluid">
+					<div align="center">
+						<p:panel>
+							<p:panelGrid columns="2" layout="grid"
+								styleClass="ui-panelgrid-blank ui-fluid"
+								style="border:0px none; background-color:transparent;">
+
+								<p:outputLabel for="@next" value="Product type name: " />
+								<p:inputText id="a" placeholder="Product type name"
+									value="001" required="true"
+									requiredMessage="Enter the product type name!">
+									<p:tooltip for="a" value="Enter the product type name!"
+										position="bottom" />
+								</p:inputText>
+							</p:panelGrid>
+						</p:panel>
+						<p:panel>
+							<div align="center">
+								<p:row>
+									<p:panelGrid columns="1">
+										<p:commandButton value="Save new Product Type" id="btn-editar"
+											icon="fa fa-plus" styleClass="p-mr-2"
+											update="form-tallas-tipos"
+											process="crearTipo-ProductDialog @this"
+											onclick="PF('crearTipoProductDialog').hide()" />
+									</p:panelGrid>
+
+								</p:row>
+							</div>
+						</p:panel>
+					</div>
+				</p:outputPanel>
+			</p:dialog>
+		</div>
+	</h:form>
+
+
+	<h:form id="form-editar-tipo">
+		<div align="center">
+			<p:dialog header="Edita Product Type" showEffect="fade"
+				modal="true" widgetVar="editarTipoProductDialog" responsive="true">
+				<p:outputPanel id="editarTipo-ProductDialog" class="ui-fluid">
+					<div align="center">
+						<p:panel>
+							<p:panelGrid columns="2" layout="grid"
+								styleClass="ui-panelgrid-blank ui-fluid"
+								style="border:0px none; background-color:transparent;">
+
+								<p:outputLabel for="@next" value="Product type name:" />
+								<p:inputText id="a" placeholder="Product type name" value="001"
+									required="true"
+									requiredMessage="Enter the product type name!">
+									<p:tooltip for="a"
+										value="Enter the product type name!"
+										position="bottom" />
+								</p:inputText>
+							</p:panelGrid>
+						</p:panel>
+						<p:panel>
+							<div align="center">
+								<p:row>
+									<p:panelGrid columns="1">
+										<p:commandButton value="Save Edition of Product Type"
+											id="btn-editar" icon="fa fa-plus" styleClass="p-mr-2"
+											update="form-tallas-tipos"
+											process="editarTipo-ProductDialog @this"
+											onclick="PF('editarTipoProductDialog').hide()" />
+									</p:panelGrid>
+
+								</p:row>
+							</div>
+						</p:panel>
+					</div>
+				</p:outputPanel>
+			</p:dialog>
+		</div>
+	</h:form>
+
+
+
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"> 
+
+<h:head>
+	<f:facet name="first">
+		<meta name="viewport"
+			content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no" />
+		<title>Login</title>
+	</f:facet>
+	<link rel="icon" type="image/jpg" href="Imagenes/icono_boutique.jpeg" />
+	<link rel="stylesheet" href="css/style.css" />
+	<link rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+</h:head> 
+<body> 
+	<h1>Hola Mario</h1>
+	<div align="center">
+		<h1 style="color: red">Universidad Técnica del Norte</h1>
+		<img src="Imagenes/icono_boutique.jpeg"
+			style="width: 400px; height: 300px" />
+	</div>
+
+
+	<h:form id="form">
+		<p:growl id="ms">
+			<p:autoUpdate />
+		</p:growl>
+		<div align="center">
+
+			<p:toolbar style="background: black;">
+				<p:toolbarGroup style="background: black;">
+					<div class="b" align="center" style="background: black;">
+						<p:panelGrid id="g" columns="4"
+							style="width: 1280px; background: black;"
+							styleClass="ui-noborder">
+							<p:commandButton value="Iniciar Sesión como Administrador"
+								icon="fa fa-user" update=":form1:manage-product-content1"
+								oncomplete="PF('manageProductDialog1').show()"
+								styleClass="ui-button-success" style="width: 340px;">
+								<p:resetInput target=":form1:manage-product-content1" />
+							</p:commandButton>
+							<p:commandButton value="Iniciar Sesión como Vendedor"
+								icon="fa fa-user" update=":form2:manage-product-content2"
+								oncomplete="PF('manageProductDialog2').show()"
+								styleClass="ui-button-success" style="width: 340px;">
+								<p:resetInput target=":form2:manage-product-content2" />
+							</p:commandButton>
+
+							<p:commandButton value="Iniciar Sesión como Cliente"
+								disabled="false" icon="fa fa-user"
+								update=":form3:manage-product-content3"
+								oncomplete="PF('manageProductDialog3').show()"
+								styleClass="ui-button-success" style="width: 340px;">
+								<p:resetInput target=":form3:manage-product-content3" />
+							</p:commandButton>
+
+							<p:commandButton value="Ver Productos" icon="fa fa-shopping-cart"
+								styleClass="ui-button-success" style="width: 340px;">
+							</p:commandButton>
+
+						</p:panelGrid>
+					</div>
+				</p:toolbarGroup>
+			</p:toolbar>
+		</div>
+	</h:form>
+
+	<h:form id="form1">
+		<div align="center" style="background: black;">
+			<p:dialog header="Iniciar Sesión como Administrador"
+				style="background: black;" showEffect="fade" modal="true"
+				widgetVar="manageProductDialog1" responsive="true">
+				<p:outputPanel id="manage-product-content1" class="ui-fluid"
+					style="background: black;">
+
+
+
+					<p:panel header="Acceso para usuarios:" style=" background: black;">
+						<div align="center">
+							<img src="Imagenes/user_login.ico" alt="alt"
+								style="width: 100px; height: 100px" />
+						</div>
+						<div>
+							<p:panelGrid columns="2" styleClass="ui-noborder"
+								style=" background: black;">
+								<i class="fa fa-user" style="font-weight: bold"> User Name:</i>
+								<p:inputText value="#{beanUsuarios.id_usuario}"
+									style="font-weight:bold" placeholder="user-name" />
+								<i class="fa fa-key" style="font-weight: bold"> Password:</i>
+								<p:password value="#{beanUsuarios.password}"
+									style="font-weight:bold" placeholder="**********"
+									feedback="false" />
+							</p:panelGrid>
+						</div>
+					</p:panel>
+					<p:panel>
+						<div align="center">
+							<p:row>
+
+								<p:panelGrid columns="2" styleClass="ui-noborder">
+									<p:commandButton value="Iniciar Sesión"
+										icon="fa fa-arrow-circle-right" styleClass="p-mr-2"
+										action="#{beanUsuarios.actionLoginGerente()}"
+										process="manage-product-content1"
+										onclick="PF('manageProductDialog1').show()" />
+									<p:commandButton value="Cancelar" icon="pi pi-times"
+										onclick="PF('manageProductDialog1').hide()" update="form1"
+										styleClass="ui-button-danger"
+										action="#{beanUsuarios.actionListenerCancelarLogin()}" />
+								</p:panelGrid>
+
+							</p:row>
+						</div>
+					</p:panel>
+					<p:panel header="Informacion Adicional:">
+						<div align="center">
+							<p:row>
+								<p:staticMessage
+									summary="Si es un usuario nuevo, primero debe registrarse con el Administrador."
+									severity="warn" />
+							</p:row>
+						</div>
+
+					</p:panel>
+				</p:outputPanel>
+
+			</p:dialog>
+		</div>
+	</h:form>
+
+	<h:form id="form2">
+		<div align="center">
+			<p:dialog header="Iniciar Sesión como Vendedor" showEffect="fade"
+				modal="true" widgetVar="manageProductDialog2" responsive="true">
+				<p:outputPanel id="manage-product-content2" class="ui-fluid">
+
+
+
+					<p:panel header="Acceso para usuarios:">
+						<div align="center">
+							<img src="Imagenes/user_login.ico" alt="alt"
+								style="width: 100px; height: 100px" />
+						</div>
+						<div>
+							<p:panelGrid columns="2" styleClass="ui-noborder">
+								<i class="fa fa-user" style="font-weight: bold"> User Name:</i>
+								<p:inputText value="#{beanUsuarios.id_usuario}"
+									style="font-weight:bold" placeholder="user-name" />
+								<i class="fa fa-key" style="font-weight: bold"> Password:</i>
+								<p:password value="#{beanUsuarios.password}"
+									style="font-weight:bold" placeholder="**********"
+									feedback="false" />
+							</p:panelGrid>
+						</div>
+					</p:panel>
+					<p:panel>
+						<div align="center">
+							<p:row>
+
+								<p:panelGrid columns="2" styleClass="ui-noborder">
+									<p:commandButton value="Iniciar Sesión"
+										icon="fa fa-arrow-circle-right" styleClass="p-mr-2"
+										action="#{beanUsuarios.actionLoginVendedor()}"
+										process="manage-product-content2 @this"
+										onclick="PF('manageProductDialog2').show()" />
+									<p:commandButton value="Cancelar" icon="pi pi-times"
+										onclick="PF('manageProductDialog2').hide()" update="form2"
+										styleClass="ui-button-danger"
+										action="#{beanUsuarios.actionListenerCancelarLogin()}" />
+								</p:panelGrid>
+
+							</p:row>
+						</div>
+					</p:panel>
+					<p:panel header="Informacion Adicional:">
+						<div align="center">
+							<p:row>
+								<p:staticMessage
+									summary="Si es un usuario nuevo, primero debe registrarse con el Administrador."
+									severity="warn" />
+							</p:row>
+						</div>
+
+					</p:panel>
+				</p:outputPanel>
+
+			</p:dialog>
+		</div>
+	</h:form>
+
+	<h:form id="form3">
+		<div align="center">
+			<p:dialog header="Iniciar Sesión como Cliente" showEffect="fade"
+				modal="true" widgetVar="manageProductDialog3" responsive="true">
+				<p:outputPanel id="manage-product-content3" class="ui-fluid">
+
+
+
+					<p:panel header="Acceso para usuarios:">
+						<div align="center">
+							<img src="Imagenes/user_login.ico" alt="alt"
+								style="width: 100px; height: 100px" />
+						</div>
+						<div>
+							<p:panelGrid columns="2" styleClass="ui-noborder">
+								<i class="fa fa-user" style="font-weight: bold"> User Name:</i>
+								<p:inputText value="#{beanUsuarios.id_usuario}"
+									style="font-weight:bold" placeholder="user-name" />
+								<i class="fa fa-key" style="font-weight: bold"> Password:</i>
+								<p:password value="#{beanUsuarios.password}"
+									style="font-weight:bold" placeholder="**********"
+									feedback="false" />
+							</p:panelGrid>
+						</div>
+					</p:panel>
+					<p:panel>
+						<div align="center">
+							<p:row>
+
+								<p:panelGrid columns="2" styleClass="ui-noborder">
+									<p:commandButton value="Iniciar Sesión"
+										icon="fa fa-arrow-circle-right" styleClass="p-mr-2"
+										action="#{beanUsuarios.actionLoginCliente()}"
+										process="manage-product-content3 @this"
+										onclick="PF('manageProductDialog3').show()" />
+									<p:commandButton value="Cancelar" icon="pi pi-times"
+										onclick="PF('manageProductDialog3').hide()" update="form3"
+										styleClass="ui-button-danger"
+										action="#{beanUsuarios.actionListenerCancelarLogin()}" />
+								</p:panelGrid>
+
+							</p:row>
+						</div>
+					</p:panel>
+					<p:panel header="Informacion Adicional:">
+						<div align="center">
+							<p:row>
+								<p:staticMessage
+									summary="Si es un usuario nuevo, primero debe registrarse con el Administrador."
+									severity="warn" />
+							</p:row>
+						</div>
+
+					</p:panel>
+				</p:outputPanel>
+
+			</p:dialog>
+		</div>
+	</h:form>
+</body> 
+</html>
